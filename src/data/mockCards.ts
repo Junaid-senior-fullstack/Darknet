@@ -1,0 +1,81 @@
+import { CardItem, CryptoOption } from '../types';
+
+export const INITIAL_CARDS: CardItem[] = [
+  {
+    id: 'card-200',
+    price: 200,
+    balance: 2000,
+    title: 'Cyber Test Card Alpha ($2000 Balance)',
+    cardType: 'Visa',
+    cardNumber: '4532 9182 3411 7029',
+    expDate: '08/29',
+    cvv: '492',
+    tier: 'Basic Terminal',
+    bin: '453291',
+    country: 'United States [US]',
+  },
+  {
+    id: 'card-250',
+    price: 250,
+    balance: 2500,
+    title: 'Mastercard Node Beta ($2500 Balance)',
+    cardType: 'Mastercard',
+    cardNumber: '5412 7701 8832 1044',
+    expDate: '11/28',
+    cvv: '811',
+    tier: 'Gold Network',
+    bin: '541277',
+    country: 'United Kingdom [GB]',
+  },
+  {
+    id: 'card-350',
+    price: 350,
+    balance: 3500,
+    title: 'Amex Matrix Platinum ($3500 Balance)',
+    cardType: 'Amex',
+    cardNumber: '3782 4109 2381 902',
+    expDate: '04/30',
+    cvv: '3012',
+    tier: 'Platinum Grid',
+    bin: '378241',
+    country: 'Germany [DE]',
+  },
+  {
+    id: 'card-450',
+    price: 450,
+    balance: 4500,
+    title: 'Titanium VIP Darknet ($4500 Balance)',
+    cardType: 'Visa',
+    cardNumber: '4111 8023 9940 3381',
+    expDate: '12/31',
+    cvv: '990',
+    tier: 'Titanium VIP Matrix',
+    bin: '411180',
+    country: 'Canada [CA]',
+  },
+  {
+    id: 'card-bulk-550',
+    price: 550,
+    balance: 8000,
+    title: 'BULK CARDS PACK (12 CARDS - UPTO $8K BALANCE)',
+    cardType: 'Visa',
+    cardNumber: '12x CARDS BUNDLE',
+    expDate: 'MULTI-EXP',
+    cvv: '12x CVV',
+    tier: 'Bulk Bundle (12 Cards)',
+    bin: '12x BINS',
+    country: 'Global Network [GLOBAL]',
+  }
+];
+
+export const CRYPTO_OPTIONS: CryptoOption[] = [
+  {
+    id: 'USDT_TRC20',
+    name: 'Tether USD',
+    symbol: 'USDT',
+    network: 'TRC-20 (TRON)',
+    address: 'TFDiG9Jb8paYawi1Srjz9KrKKqkkoVw9Kf',
+    rateToUsd: 1.00,
+    iconName: 'ShieldAlert',
+  }
+];

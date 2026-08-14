@@ -1,0 +1,6 @@
+{
+  "name": "CyberCard Terminal",
+  "description": "Greenish matrix-themed cyber card portal featuring biometric thumb verification, crypto checkout, 20-hour replacement timer, and session lockouts.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
