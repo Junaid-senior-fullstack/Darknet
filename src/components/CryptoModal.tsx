@@ -89,20 +89,20 @@ export const CryptoModal: React.FC<CryptoModalProps> = ({ card, onClose, onSucce
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 font-mono overflow-y-auto">
-      <div className="relative max-w-3xl w-full bg-black border border-emerald-500/70 rounded-2xl p-6 sm:p-8 shadow-[0_0_50px_rgba(16,185,129,0.35)] my-6">
+    <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-start justify-center p-3 sm:p-6 font-mono overflow-y-auto">
+      <div className="relative max-w-3xl w-full bg-black border border-emerald-500/70 rounded-2xl p-5 sm:p-7 shadow-[0_0_50px_rgba(16,185,129,0.35)] my-auto max-h-[92vh] flex flex-col overflow-hidden">
         
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 text-emerald-500 hover:text-white hover:bg-emerald-950 rounded-xl transition-all cursor-pointer z-10"
+          className="absolute top-4 right-4 p-2 text-emerald-500 hover:text-white hover:bg-emerald-950 rounded-xl transition-all cursor-pointer z-20"
         >
           <X className="w-5 h-5" />
         </button>
 
         {/* STAGE 1: CRYPTO PAYMENT & CUSTOMER FORM */}
         {checkoutStage === 'CRYPTO_PAYMENT' && (
-          <div className="space-y-6">
+          <div className="space-y-5 overflow-y-auto pr-1">
             {/* Header */}
             <div className="border-b border-emerald-800/80 pb-4">
               <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase tracking-wider mb-1">
