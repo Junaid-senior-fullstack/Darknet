@@ -13,6 +13,9 @@ export const INITIAL_CARDS: CardItem[] = [
     tier: 'Basic Terminal',
     bin: '453291',
     country: 'United States [US]',
+    purchased: true,
+    purchasedAt: Date.now() - 16 * 3600 * 1000,
+    replacementTimerEnd: Date.now() + (3 * 3600 + 58 * 60 + 45) * 1000, // ~4 hours remaining
   },
   {
     id: 'card-250',

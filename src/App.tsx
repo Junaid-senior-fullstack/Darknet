@@ -10,6 +10,7 @@ import { LockoutScreen } from './components/LockoutScreen';
 import { BuyLinkCard } from './components/BuyLinkCard';
 import { LinkCryptoModal } from './components/LinkCryptoModal';
 import { ApplyNoticeModal } from './components/ApplyNoticeModal';
+import { CardPurchaseNoticeModal } from './components/CardPurchaseNoticeModal';
 import { setMuted } from './utils/audio';
 import { ShieldAlert, Terminal, Lock, Cpu, Sparkles, Filter, AlertTriangle } from 'lucide-react';
 
@@ -23,6 +24,7 @@ export default function App() {
 
   // Active Modals
   const [buyingCard, setBuyingCard] = useState<CardItemType | null>(null);
+  const [noticeCard, setNoticeCard] = useState<CardItemType | null>(null);
   const [replacingCard, setReplacingCard] = useState<CardItemType | null>(null);
   const [isApplyNoticeOpen, setIsApplyNoticeOpen] = useState(false);
   const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
@@ -88,13 +90,14 @@ export default function App() {
     setPhase('PORTAL');
   };
 
-  // Step 3: Card Buy Handler
+  // Step 3: Card Buy Handler -> Open Crypto Gateway (Scanner & Checkout Form)
   const handleBuyCard = (card: CardItemType) => {
     setBuyingCard(card);
   };
 
-  // Crypto Payment Success
+  // Crypto Payment Success Handler
   const handleCryptoSuccess = (cardId: string) => {
+    const targetCard = cards.find((c) => c.id === cardId);
     setCards((prev) =>
       prev.map((c) =>
         c.id === cardId
@@ -108,6 +111,16 @@ export default function App() {
       )
     );
     setBuyingCard(null);
+
+    // Show English Purchase Notice Popup
+    if (targetCard) {
+      setNoticeCard({ ...targetCard, purchased: true });
+    }
+  };
+
+  // Notice Confirm Handler
+  const handleNoticeConfirm = (cardId: string) => {
+    setNoticeCard(null);
   };
 
   // Request Replacement Handler
@@ -260,6 +273,16 @@ export default function App() {
             setIsApplyNoticeOpen(false);
             setIsLinkModalOpen(true);
           }}
+        />
+      )}
+
+      {/* NEW CARD PURCHASE NOTICE POPUP MODAL */}
+      {noticeCard && (
+        <CardPurchaseNoticeModal
+          card={noticeCard}
+          userEmail={(userData as any)?.email}
+          onClose={() => setNoticeCard(null)}
+          onConfirm={handleNoticeConfirm}
         />
       )}
 

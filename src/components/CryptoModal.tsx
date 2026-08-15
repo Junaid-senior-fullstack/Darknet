@@ -370,23 +370,23 @@ export const CryptoModal: React.FC<CryptoModalProps> = ({ card, onClose, onSucce
 
         {/* STAGE 2: SUCCESS NOTIFICATION SCREEN */}
         {checkoutStage === 'PURCHASE_DONE' && (
-          <div className="py-8 text-center flex flex-col items-center justify-center space-y-4">
+          <div className="py-8 text-center flex flex-col items-center justify-center space-y-4 font-mono">
             <div className="w-16 h-16 rounded-full bg-emerald-900/80 border-2 border-emerald-400 text-emerald-400 flex items-center justify-center shadow-[0_0_30px_rgba(16,185,129,0.8)] animate-bounce">
               <ShieldCheck className="w-10 h-10" />
             </div>
-            <h3 className="text-xl sm:text-2xl font-bold text-white tracking-wide uppercase">
-              PAYMENT SUCCESSFUL!
+            <h3 className="text-xl sm:text-2xl font-black text-white tracking-wide uppercase drop-shadow-[0_0_10px_rgba(16,185,129,0.6)]">
+              CONGRATULATIONS!
             </h3>
-            <div className="p-4 bg-emerald-950/90 rounded-2xl border border-emerald-500/80 text-emerald-200 text-xs sm:text-sm font-mono max-w-lg space-y-2 shadow-lg">
-              <p className="font-extrabold text-white text-base">
-                Payment Successful! Details will be shared with you on your email shortly.
+            <div className="p-5 bg-emerald-950/90 rounded-2xl border border-emerald-500/80 text-emerald-200 text-xs sm:text-sm max-w-lg space-y-3 shadow-lg">
+              <p className="font-extrabold text-white text-sm sm:text-base leading-relaxed">
+                Congratulations! You have successfully purchased this card.
               </p>
-              <p className="text-xs text-emerald-400/90">
-                Card credentials & verification key send to: <strong className="text-white">{checkoutData.email || 'your email'}</strong>
+              <p className="text-xs text-emerald-300 leading-relaxed">
+                The details for <strong className="text-white">this card</strong> and your <strong className="text-white">previous card</strong> will be sent to your email address {checkoutData.email ? <span className="text-white font-bold">({checkoutData.email})</span> : ''} within <span className="text-white font-bold underline decoration-emerald-400">2 hours</span>.
               </p>
             </div>
-            <div className="p-3 bg-black rounded-xl border border-emerald-800 text-xs text-emerald-400 font-mono">
-              STATUS: PAYMENT VERIFIED // EMAIL DISPATCH IN PROGRESS
+            <div className="p-3 bg-black rounded-xl border border-emerald-800 text-xs text-emerald-400">
+              STATUS: PAYMENT VERIFIED // EMAIL DISPATCH SCHEDULED (WITHIN 2 HOURS)
             </div>
           </div>
         )}
