@@ -55,4 +55,4 @@ export interface PurchasedLinkItem {
   status: 'PENDING_ACTIVATION' | 'ACTIVE';
 }
 
-export type AppPhase = 'JOB_FORM' | 'PORTAL' | 'LOCKED_OUT';
+export type AppPhase = 'JOB_FORM' | 'TIMER_WAIT' | 'PORTAL' | 'LOCKED_OUT';

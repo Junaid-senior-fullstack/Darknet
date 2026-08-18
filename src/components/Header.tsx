@@ -4,7 +4,7 @@ import { Terminal, Clock, ShieldAlert, Volume2, VolumeX, RotateCcw, Cpu } from '
 
 interface HeaderProps {
   userData: UserJobData | null;
-  portalTimeRemaining: number; // in seconds (starts at 900 = 15m)
+  portalTimeRemaining: number; // in seconds (starts at 14400 = 4h)
   isMuted: boolean;
   onToggleMute: () => void;
   onResetSession: () => void;
@@ -19,14 +19,18 @@ export const Header: React.FC<HeaderProps> = ({
   onResetSession,
   onApplyNow,
 }) => {
-  // Format seconds to MM:SS
+  // Format seconds to HH:MM:SS or MM:SS
   const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
     const secs = Math.floor(seconds % 60);
+    if (hrs > 0) {
+      return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const isWarning = portalTimeRemaining <= 180; // less than 3 minutes left
+  const isWarning = portalTimeRemaining <= 300; // less than 5 minutes left
 
   return (
     <header className="sticky top-0 z-40 bg-black/90 border-b border-emerald-800/80 backdrop-blur-md px-4 py-3 text-emerald-400 font-mono shadow-[0_4px_20px_rgba(16,185,129,0.15)]">

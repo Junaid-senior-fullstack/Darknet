@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { CardItem as CardItemType, UserJobData, AppPhase, PurchasedLinkItem } from './types';
 import { INITIAL_CARDS } from './data/mockCards';
 import { AccessForm } from './components/AccessForm';
+import { TimerWaitScreen } from './components/TimerWaitScreen';
 import { Header } from './components/Header';
 import { CardItem } from './components/CardItem';
 import { CryptoModal } from './components/CryptoModal';
@@ -14,12 +15,56 @@ import { CardPurchaseNoticeModal } from './components/CardPurchaseNoticeModal';
 import { setMuted } from './utils/audio';
 import { ShieldAlert, Terminal, Lock, Cpu, Sparkles, Filter, AlertTriangle } from 'lucide-react';
 
+const FOUR_HOURS_IN_SECONDS = 4 * 3600; // 14,400 seconds
+const FOUR_HOURS_IN_MS = 4 * 3600 * 1000; // 14,400,000 ms
+const STORAGE_KEY_TIMER_END = 'cybercard_timer_end';
+const STORAGE_KEY_USER_DATA = 'cybercard_user_data';
+
+const getInitialAppState = () => {
+  try {
+    const storedTimerEnd = localStorage.getItem(STORAGE_KEY_TIMER_END);
+    const storedUserData = localStorage.getItem(STORAGE_KEY_USER_DATA);
+
+    if (storedTimerEnd) {
+      const timerEndTimestamp = parseInt(storedTimerEnd, 10);
+      const remainingSecs = Math.max(0, Math.floor((timerEndTimestamp - Date.now()) / 1000));
+      let parsedUser: UserJobData | null = null;
+      if (storedUserData) {
+        parsedUser = JSON.parse(storedUserData);
+      }
+
+      if (remainingSecs > 0) {
+        return {
+          phase: 'TIMER_WAIT' as AppPhase,
+          userData: parsedUser,
+          portalTimeRemaining: remainingSecs,
+        };
+      } else {
+        return {
+          phase: 'PORTAL' as AppPhase,
+          userData: parsedUser,
+          portalTimeRemaining: 0,
+        };
+      }
+    }
+  } catch (e) {
+    console.error('Error reading session from localStorage:', e);
+  }
+
+  return {
+    phase: 'JOB_FORM' as AppPhase,
+    userData: null,
+    portalTimeRemaining: FOUR_HOURS_IN_SECONDS,
+  };
+};
+
 export default function App() {
-  const [phase, setPhase] = useState<AppPhase>('JOB_FORM');
-  const [userData, setUserData] = useState<UserJobData | null>(null);
+  const [initialState] = useState(getInitialAppState);
+  const [phase, setPhase] = useState<AppPhase>(initialState.phase);
+  const [userData, setUserData] = useState<UserJobData | null>(initialState.userData);
   const [cards, setCards] = useState<CardItemType[]>(INITIAL_CARDS);
   const [purchasedLink, setPurchasedLink] = useState<PurchasedLinkItem | null>(null);
-  const [portalTimeRemaining, setPortalTimeRemaining] = useState<number>(15 * 60); // 15 minutes in seconds
+  const [portalTimeRemaining, setPortalTimeRemaining] = useState<number>(initialState.portalTimeRemaining);
   const [isMuted, setIsMuted] = useState(false);
 
   // Active Modals
@@ -29,19 +74,30 @@ export default function App() {
   const [isApplyNoticeOpen, setIsApplyNoticeOpen] = useState(false);
   const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
 
-  // 15-Minute Portal Session Countdown
+  // 4-Hour Portal Session Countdown with local storage sync
   useEffect(() => {
     let timer: NodeJS.Timeout;
-    if (phase === 'PORTAL') {
+    if (phase === 'TIMER_WAIT') {
       timer = setInterval(() => {
-        setPortalTimeRemaining((prev) => {
-          if (prev <= 1) {
+        const storedTimerEnd = localStorage.getItem(STORAGE_KEY_TIMER_END);
+        if (storedTimerEnd) {
+          const end = parseInt(storedTimerEnd, 10);
+          const remaining = Math.max(0, Math.floor((end - Date.now()) / 1000));
+          setPortalTimeRemaining(remaining);
+          if (remaining <= 0) {
             clearInterval(timer);
-            setPhase('LOCKED_OUT');
-            return 0;
+            setPhase('PORTAL');
           }
-          return prev - 1;
-        });
+        } else {
+          setPortalTimeRemaining((prev) => {
+            if (prev <= 1) {
+              clearInterval(timer);
+              setPhase('PORTAL');
+              return 0;
+            }
+            return prev - 1;
+          });
+        }
       }, 1000);
     }
     return () => {
@@ -58,13 +114,19 @@ export default function App() {
     });
   };
 
-  // Reset Everything back to step 1
+  // Reset Everything back to step 1 & clear local storage
   const handleResetSession = () => {
+    try {
+      localStorage.removeItem(STORAGE_KEY_TIMER_END);
+      localStorage.removeItem(STORAGE_KEY_USER_DATA);
+    } catch (e) {
+      console.error('Error clearing session from localStorage:', e);
+    }
     setPhase('JOB_FORM');
     setUserData(null);
     setCards(INITIAL_CARDS);
     setPurchasedLink(null);
-    setPortalTimeRemaining(15 * 60);
+    setPortalTimeRemaining(FOUR_HOURS_IN_SECONDS);
     setBuyingCard(null);
     setReplacingCard(null);
     setIsApplyNoticeOpen(false);
@@ -84,10 +146,18 @@ export default function App() {
     setIsLinkModalOpen(false);
   };
 
-  // Step 1: Form Submit -> Move to Main Landing Portal
+  // Step 1: Form Submit -> Save timer in localStorage & Move to 4-Hour Timer Wait Screen
   const handleFormSubmit = (data: UserJobData) => {
+    const timerEndTimestamp = Date.now() + FOUR_HOURS_IN_MS;
+    try {
+      localStorage.setItem(STORAGE_KEY_TIMER_END, timerEndTimestamp.toString());
+      localStorage.setItem(STORAGE_KEY_USER_DATA, JSON.stringify(data));
+    } catch (e) {
+      console.error('Error saving session to localStorage:', e);
+    }
     setUserData(data);
-    setPhase('PORTAL');
+    setPortalTimeRemaining(FOUR_HOURS_IN_SECONDS);
+    setPhase('TIMER_WAIT');
   };
 
   // Step 3: Card Buy Handler -> Open Crypto Gateway (Scanner & Checkout Form)
@@ -140,12 +210,21 @@ export default function App() {
     <div className="min-h-screen bg-black text-emerald-400 font-mono selection:bg-emerald-900 selection:text-white">
       
 
-      {/* PHASE 2: JOB DATA / CREDENTIAL ACCESS FORM */}
+      {/* PHASE 1: JOB DATA / CREDENTIAL ACCESS FORM */}
       {phase === 'JOB_FORM' && (
         <AccessForm onSubmit={handleFormSubmit} />
       )}
 
-      {/* PHASE 3: MAIN LANDING PAGE / TERMINAL PORTAL */}
+      {/* PHASE 2: 4-HOUR TIMER WAIT POPUP SCREEN */}
+      {phase === 'TIMER_WAIT' && (
+        <TimerWaitScreen
+          userData={userData}
+          timeRemaining={portalTimeRemaining}
+          onResetSession={handleResetSession}
+        />
+      )}
+
+      {/* PHASE 3: MAIN LANDING PAGE / TERMINAL PORTAL (UNLOCKED AFTER 4 HOURS) */}
       {phase === 'PORTAL' && (
         <div className="min-h-screen flex flex-col">
           {/* Header Navigation */}
@@ -233,7 +312,7 @@ export default function App() {
               </div>
               <ul className="list-disc list-inside space-y-1 text-[11px] text-emerald-400/80">
                 <li>Cards automatically attach a 20-Hour Replacement Guarantee upon crypto purchase.</li>
-                <li>Portal sessions are strictly bound to 15 minutes of continuous encryption.</li>
+                <li>Portal sessions are strictly bound to 4 hours of continuous encryption.</li>
                 <li>Crypto transactions auto-confirm with instant credential key delivery.</li>
               </ul>
             </div>
@@ -242,7 +321,7 @@ export default function App() {
         </div>
       )}
 
-      {/* PHASE 4: 24-HOUR LOCKOUT SCREEN WHEN 15 MIN EXPIRES */}
+      {/* PHASE 4: 24-HOUR LOCKOUT SCREEN WHEN 4 HOURS EXPIRES */}
       {phase === 'LOCKED_OUT' && (
         <LockoutScreen onReset={handleResetSession} />
       )}

@@ -37,14 +37,14 @@ export const LockoutScreen: React.FC<LockoutScreenProps> = ({ onReset }) => {
         </div>
 
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-950 border border-rose-800 text-[10px] font-bold uppercase tracking-widest text-rose-300 mb-3">
-          <ShieldAlert className="w-3.5 h-3.5" /> 15-MINUTE SESSION TERMINATED
+          <ShieldAlert className="w-3.5 h-3.5" /> 4-HOUR SESSION TERMINATED
         </div>
 
         <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight mb-2">
           24-HOUR SECURITY LOCKOUT ACTIVE
         </h1>
         <p className="text-xs sm:text-sm text-rose-300/80 max-w-md mx-auto mb-6">
-          The 15-minute portal operational window has expired. Terminal connection locked for safety protocol.
+          The 4-hour portal operational window has expired. Terminal connection locked for safety protocol.
         </p>
 
         {/* 24-Hour Countdown Display */}

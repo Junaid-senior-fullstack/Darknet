@@ -206,7 +206,7 @@ export const AccessForm: React.FC<AccessFormProps> = ({ onSubmit }) => {
             {/* Verification Banner */}
             <div className="p-3 rounded-xl bg-emerald-950/80 border border-emerald-800/60 text-[11px] text-emerald-400/90 flex items-center gap-2">
               <Lock className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-              <span>Data will be encrypted with ephemeral 15-minute portal session token.</span>
+              <span>Data will be encrypted with ephemeral 4-hour portal session token.</span>
             </div>
 
             {/* Submit Button */}
@@ -247,7 +247,7 @@ export const AccessForm: React.FC<AccessFormProps> = ({ onSubmit }) => {
 
         {/* Footer info */}
         <div className="mt-6 pt-4 border-t border-emerald-900/60 text-center text-[10px] text-emerald-600 flex items-center justify-center gap-2">
-          <Terminal className="w-3 h-3 text-emerald-500" /> MATRIX PORTAL GATEWAY v9.4 // SESSION EXPIRATION 15m ACTIVE
+          <Terminal className="w-3 h-3 text-emerald-500" /> MATRIX PORTAL GATEWAY v9.4 // SESSION EXPIRATION 4h ACTIVE
         </div>
       </div>
     </div>
