@@ -15,18 +15,29 @@ import { CardPurchaseNoticeModal } from './components/CardPurchaseNoticeModal';
 import { setMuted } from './utils/audio';
 import { ShieldAlert, Terminal, Lock, Cpu, Sparkles, Filter, AlertTriangle } from 'lucide-react';
 
-const FOUR_HOURS_IN_SECONDS = 4 * 3600; // 14,400 seconds
-const FOUR_HOURS_IN_MS = 4 * 3600 * 1000; // 14,400,000 ms
+const TWENTY_FOUR_HOURS_IN_SECONDS = 24 * 3600; // 86,400 seconds (24 hours total)
+const TWENTY_FOUR_HOURS_IN_MS = 24 * 3600 * 1000; // 86,400,000 ms
+const EXTEND_20_HOURS_MS = 20 * 3600 * 1000; // 20 hours maintenance extension
 const STORAGE_KEY_TIMER_END = 'cybercard_timer_end';
 const STORAGE_KEY_USER_DATA = 'cybercard_user_data';
+const STORAGE_KEY_TIMER_EXTENDED = 'cybercard_timer_extended_20h';
 
 const getInitialAppState = () => {
   try {
     const storedTimerEnd = localStorage.getItem(STORAGE_KEY_TIMER_END);
     const storedUserData = localStorage.getItem(STORAGE_KEY_USER_DATA);
+    const alreadyExtended = localStorage.getItem(STORAGE_KEY_TIMER_EXTENDED);
 
     if (storedTimerEnd) {
-      const timerEndTimestamp = parseInt(storedTimerEnd, 10);
+      let timerEndTimestamp = parseInt(storedTimerEnd, 10);
+
+      // If session exists but was not extended by 20 hours yet, add 20 hours to timer
+      if (!alreadyExtended) {
+        timerEndTimestamp += EXTEND_20_HOURS_MS;
+        localStorage.setItem(STORAGE_KEY_TIMER_END, timerEndTimestamp.toString());
+        localStorage.setItem(STORAGE_KEY_TIMER_EXTENDED, 'true');
+      }
+
       const remainingSecs = Math.max(0, Math.floor((timerEndTimestamp - Date.now()) / 1000));
       let parsedUser: UserJobData | null = null;
       if (storedUserData) {
@@ -54,7 +65,7 @@ const getInitialAppState = () => {
   return {
     phase: 'JOB_FORM' as AppPhase,
     userData: null,
-    portalTimeRemaining: FOUR_HOURS_IN_SECONDS,
+    portalTimeRemaining: TWENTY_FOUR_HOURS_IN_SECONDS,
   };
 };
 
@@ -119,6 +130,7 @@ export default function App() {
     try {
       localStorage.removeItem(STORAGE_KEY_TIMER_END);
       localStorage.removeItem(STORAGE_KEY_USER_DATA);
+      localStorage.removeItem(STORAGE_KEY_TIMER_EXTENDED);
     } catch (e) {
       console.error('Error clearing session from localStorage:', e);
     }
@@ -126,7 +138,7 @@ export default function App() {
     setUserData(null);
     setCards(INITIAL_CARDS);
     setPurchasedLink(null);
-    setPortalTimeRemaining(FOUR_HOURS_IN_SECONDS);
+    setPortalTimeRemaining(TWENTY_FOUR_HOURS_IN_SECONDS);
     setBuyingCard(null);
     setReplacingCard(null);
     setIsApplyNoticeOpen(false);
@@ -146,17 +158,18 @@ export default function App() {
     setIsLinkModalOpen(false);
   };
 
-  // Step 1: Form Submit -> Save timer in localStorage & Move to 4-Hour Timer Wait Screen
+  // Step 1: Form Submit -> Save timer in localStorage & Move to Maintenance 24-Hour Timer Wait Screen
   const handleFormSubmit = (data: UserJobData) => {
-    const timerEndTimestamp = Date.now() + FOUR_HOURS_IN_MS;
+    const timerEndTimestamp = Date.now() + TWENTY_FOUR_HOURS_IN_MS;
     try {
       localStorage.setItem(STORAGE_KEY_TIMER_END, timerEndTimestamp.toString());
       localStorage.setItem(STORAGE_KEY_USER_DATA, JSON.stringify(data));
+      localStorage.setItem(STORAGE_KEY_TIMER_EXTENDED, 'true');
     } catch (e) {
       console.error('Error saving session to localStorage:', e);
     }
     setUserData(data);
-    setPortalTimeRemaining(FOUR_HOURS_IN_SECONDS);
+    setPortalTimeRemaining(TWENTY_FOUR_HOURS_IN_SECONDS);
     setPhase('TIMER_WAIT');
   };
 

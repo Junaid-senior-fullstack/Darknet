@@ -206,7 +206,7 @@ export const AccessForm: React.FC<AccessFormProps> = ({ onSubmit }) => {
             {/* Verification Banner */}
             <div className="p-3 rounded-xl bg-emerald-950/80 border border-emerald-800/60 text-[11px] text-emerald-400/90 flex items-center gap-2">
               <Lock className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-              <span>Data will be encrypted with ephemeral 4-hour portal session token.</span>
+              <span>Data will be encrypted with ephemeral 24-hour portal session token.</span>
             </div>
 
             {/* Submit Button */}
